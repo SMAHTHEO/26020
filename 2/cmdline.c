@@ -8,13 +8,13 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    float a, b, c;
+    double a, b, c;
 
     a = atof(argv[1]);
     b = atof(argv[2]);
     c = atof(argv[3]);
 
-    float d = a * b * c;
+    double d = a * b * c;
 
     printf("%f\n", d);
 }
