@@ -19,4 +19,9 @@ int main(int argc, char **argv) {
         }
     }
 
+    // 输出
+    for (int i = 0; i < argc - 1; i++) {
+        printf("%d ", a[i]);
+    }
+
 }
