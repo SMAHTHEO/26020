@@ -11,7 +11,6 @@ int main(int argc, char **argv) {
     string[5] = 'e';
     string[6] = 'r';
     string[7] = 'e';
-    string[8] = '\n';
 
     printf("%s\n", string);
 
