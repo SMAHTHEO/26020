@@ -1,6 +1,6 @@
 int main() {
-    int a;
-    double b;
-    a = 42;
-    b = 24;
+    int int_var;
+    double double_var;
+    int_var = 42;
+    double_var = 24;
 }
