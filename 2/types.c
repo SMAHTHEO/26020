@@ -2,9 +2,9 @@
 
 int main() {
 
-    int variable = 10;
+    unsigned int variable = 10;
 
-    printf("variable is %d\n", variable);
+    printf("variable is %u\n", variable);
 
     return 0;
 }
