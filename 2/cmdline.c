@@ -10,9 +10,9 @@ int main(int argc, char *argv[])
 
     float a, b, c;
 
-    float a = atof(argv[1]);
-    float b = atof(argv[2]);
-    float c = atof(argv[3]);
+    a = atof(argv[1]);
+    b = atof(argv[2]);
+    c = atof(argv[3]);
 
     float d = a * b * c;
 
