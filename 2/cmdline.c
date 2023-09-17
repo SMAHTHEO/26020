@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[])
 {
@@ -17,4 +18,5 @@ int main(int argc, char *argv[])
     double d = a * b * c;
 
     printf("%f\n", d);
+    return 0;
 }
