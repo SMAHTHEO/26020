@@ -4,17 +4,17 @@
 
 int main(int argc, char **argv) {
 
-    int temp;
+    int a[argc - 1];
 
     for (int i = 1; i < argc; i++) {
-        temp = atoi(argv[i]);
-
-        if (temp % 2 == 0) {
-            printf("%d is even\n", temp);
-        } else {
-            printf("%d is odd\n", temp);
-        }
-
+        a[i - 1] = atoi(argv[i]);
     }
-    return 0;
+
+    for (int i = 0; i < argc - 1; i++) {
+        if (a[i] % 2 == 0) {
+            printf("%d is even", a[i]);
+        } else {
+            printf("%d is odd", a[i]);
+        }
+    }
 }
