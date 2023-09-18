@@ -5,9 +5,8 @@ typedef struct s_rectangle rectangle;
 typedef unsigned long long int ull;
 
 struct s_rectangle {
-    unsigned long long int width;
-    unsigned long long int length;
-
+    ull width;
+    ull length;
 };
 
 void print_rectangle(struct s_rectangle r) {
@@ -16,8 +15,8 @@ void print_rectangle(struct s_rectangle r) {
 
 int main(int argc, char **argv) {
     struct s_rectangle r;
-    unsigned long long int width;
-    unsigned long long int length;
+    ull width;
+    ull length;
 
     if(argc == 3) {
         width = atoll(argv[1]);
