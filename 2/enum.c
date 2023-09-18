@@ -1,7 +1,6 @@
 #include <stdio.h>
-#include <stdio.h>
 
-typedef enum {
+enum day {
     MONDAY = 0,
     TUESDAY,
     WEDNESDAY,
@@ -9,10 +8,10 @@ typedef enum {
     FRIDAY,
     SATURDAY,
     SUNDAY
-} day;
+};
 
 int main(int argc, char **argv) {
-    day d = WEDNESDAY;
+    enum day d = WEDNESDAY;
 
     printf("Today is: ");
     switch(d) {
