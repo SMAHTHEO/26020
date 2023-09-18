@@ -12,9 +12,9 @@ int main(int argc, char **argv) {
 
     for (int i = 0; i < argc - 1; i++) {
         if (array[i] % 2 == 0) {
-            printf("%d is even", a[i]);
+            printf("%d is even", array[i]);
         } else {
-            printf("%d is odd", a[i]);
+            printf("%d is odd", array[i]);
         }
     }
 }
