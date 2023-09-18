@@ -10,5 +10,5 @@ int main(int argc, char **argv) {
         result *= i;
     }
 
-    printf("%lld\n", result);
+    printf("%d! = %lld\n", a, result);
 }
