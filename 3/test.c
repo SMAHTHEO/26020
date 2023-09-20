@@ -1,3 +1,9 @@
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef struct {
     // lots of large (8 bytes) fields:
     double a; double b; double c; double d; double e; double f;
