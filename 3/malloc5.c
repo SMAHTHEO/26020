@@ -14,7 +14,8 @@ void *my_realloc(void *ptr, size_t old_size, size_t new_size) {
     void *new_ptr = malloc(new_size);
     if(!new_ptr) return NULL;
 
-    for(size_t i=0; i<new_size; i++)
+    for(size_t i=0; i<new_size
+    ; i++)
         *((char *)new_ptr + i) = *((char *)ptr + i);
 
     free(ptr);
