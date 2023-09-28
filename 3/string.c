@@ -22,12 +22,12 @@ int main(int argc, char **argv) {
     bool flag = true;
     while (s1[i] == s2[i]) {
         if (s1[i] == '\0') {
-            printf("they are same\n");
+            printf("strings are similar\n");
             return 0;
         }
         i++;
     }
-    printf("they are different\n");
+    printf("strings are different\n");
     return 0;
 
 }
