@@ -15,7 +15,6 @@ int main(int argc, char **argv) {
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++, num++) {
             printf("%d ", num);
-            num++;
         }
         printf("\n");
     }
