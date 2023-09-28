@@ -1,7 +1,8 @@
 
 #include <stdio.h>
+#include <stdlib.h>  // for atoi
+#include <unistd.h>  // for sleep
 #include <sys/time.h> // needed for gettimeofday
-#include <time.h>
 
 int main(int argc, char **argv) {  
 
