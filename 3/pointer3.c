@@ -1,6 +1,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>  // for atoi
 
 int main(int argc, char **argv) {
     int i = atoi(argv[1]);
