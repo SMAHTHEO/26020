@@ -3,10 +3,32 @@
 
 int main(int argc, char **argv) { 
 
-    printf("Number of arguments: %d\n", argc);
-    for (int i = 0; i < argc; i++) {
-        printf("Argument %d: %s\n", i, argv[i]);
+    // 放入所有数字
+
+    int *is = malloc(sizeof(int) * (argc-1));
+
+    for (int i = 1; i < argc; i++) {
+        is[i-1] = atoi(argv[i]);
     }
+
+    // 从小到大排序
+
+    for (int i = 0; i < argc-1; i++) {
+        for (int j = i+1; j < argc-1; j++) {
+            if (is[i] > is[j]) {
+                int tmp = is[i];
+                is[i] = is[j];
+                is[j] = tmp;
+            }
+        }
+    }
+
+    // 打印
+
+    for (int i = 0; i < argc-1; i++) {
+        printf("%d ", is[i]);
+    }
+
     return 0;
 
 }
