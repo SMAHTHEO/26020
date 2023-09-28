@@ -7,6 +7,7 @@ int main(int argc, char **argv) {
     // 放入所有数字
 
     int *is = malloc(sizeof(int) * (argc-1));
+    if(!is) return -1;
 
     for (int i = 1; i < argc; i++) {
         is[i-1] = atoi(argv[i]);
