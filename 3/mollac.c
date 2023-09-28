@@ -30,6 +30,10 @@ int main(int argc, char **argv) {
         printf("%d ", is[i]);
     }
 
+    // 释放内存
+
+    free(is);
+
     return 0;
 
 }
