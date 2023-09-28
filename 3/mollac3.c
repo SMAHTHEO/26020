@@ -19,5 +19,8 @@ int main(int argc, char **argv) {
         printf("%d ", b[i]);
     printf("\n");
 
+    // 释放内存
+    free(a);
+
     return 0;
 }
