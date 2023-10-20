@@ -35,9 +35,8 @@ module Stump_ALU (input  wire [15:0] operand_A,		// First operand
 
 
 reg [16:0] temp_result; // 
-
 always @(operand_A, operand_B, func, c_in, csh) begin
-    // 
+    // 默认值
     result <= 16'b0;
     flags_out <= 4'b0;
 
@@ -50,17 +49,36 @@ always @(operand_A, operand_B, func, c_in, csh) begin
             temp_result = operand_A + operand_B + c_in;
             result <= temp_result[15:0];
         end
-        // ... 
-
+        3'b010: begin // SUB
+            temp_result = operand_A + (~operand_B + 1);
+            result <= temp_result[15:0];
+        end
+        3'b011: begin // SBC
+            temp_result = operand_A + (~operand_B + c_in);
+            result <= temp_result[15:0];
+        end
+        3'b100: begin // AND
+            result <= operand_A & operand_B;
+        end
+        3'b101: begin // OR
+            result <= operand_A | operand_B;
+        end
+        3'b110: begin // LD/ST
+            // NOP: No operation for ALU
+        end
+        3'b111: begin // Bcc
+            // NOP: No operation for ALU
+        end
     endcase
 
-    // 
-    flags_out[3] = result[15]; // 
-    flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // 
+    // 设置N和Z标志
+    flags_out[3] = result[15]; // N标志
+    flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // Z标志
 
+    // 设置V和C标志
     flags_out[1] = (operand_A[15] & operand_B[15] & ~result[15]) | 
-                  (~operand_A[15] & ~operand_B[15] & result[15]); // V
-    flags_out[0] = temp_result[16]; // C
+                  (~operand_A[15] & ~operand_B[15] & result[15]); // V标志
+    flags_out[0] = temp_result[16]; // C标志
 end
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
