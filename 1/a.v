@@ -4,14 +4,11 @@
 // Created by Paul W Nutter, Feb 2015
 //
 // ** Update this header **
+//	
+//	Ready for test
 //
 
 `include "Stump_definitions.v"
-
-// 'include' definitions of function codes etc.
-// e.g. can use "`ADD" instead of "'h0" to aid readability
-// Substitute your own definitions if you prefer by
-// modifying Stump_definitions.v
 
 /*----------------------------------------------------------------------------*/
 
@@ -37,6 +34,7 @@ reg [16:0] temp_result; //
 
 always @(operand_A, operand_B, func, c_in, csh) begin
 
+	// all calculer
     case(func)
         3'b000: begin // ADD
             temp_result = operand_A + operand_B;
@@ -82,7 +80,7 @@ always @(result, operand_A, operand_B, temp_result, csh, func) begin
 			flags_out[1] = ((operand_A[15] & operand_B[15] & ~result[15]) | (~operand_A[15] & ~operand_B[15] & result[15])) ? 1'b1 : 1'b0;
 		end else begin
 			//sun version
-			flags_out[1] = (~operand_A[15] & operand_B[15] & result[15]) ? 1'b1 : 1'b0;
+			flags_out[1] = ((operand_A[15] & ~operand_B[15] & ~result[15]) | (~operand_A[15] & operand_B[15] & result[15])) ? 1'b1 : 1'b0;
 		end
 	end else begin
 		flags_out[1] = 1'b0;
