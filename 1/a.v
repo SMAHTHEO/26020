@@ -33,10 +33,10 @@ module Stump_ALU (input  wire [15:0] operand_A,		// First operand
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 /* Verilog code                                                               */
 
-
 reg [16:0] temp_result; // 
+
 always @(operand_A, operand_B, func, c_in, csh) begin
-    // 默认值
+    // 
     result <= 16'b0;
     flags_out <= 4'b0;
 
@@ -71,14 +71,14 @@ always @(operand_A, operand_B, func, c_in, csh) begin
         end
     endcase
 
-    // 设置N和Z标志
-    flags_out[3] = result[15]; // N标志
-    flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // Z标志
+    // N Z
+    flags_out[3] = result[15]; // N
+    flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // Z
 
-    // 设置V和C标志
+    // V C
     flags_out[1] = (operand_A[15] & operand_B[15] & ~result[15]) | 
-                  (~operand_A[15] & ~operand_B[15] & result[15]); // V标志
-    flags_out[0] = temp_result[16]; // C标志
+                  (~operand_A[15] & ~operand_B[15] & result[15]); // V
+    flags_out[0] = temp_result[16]; // C
 end
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
