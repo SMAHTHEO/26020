@@ -36,7 +36,6 @@ module Stump_ALU (input  wire [15:0] operand_A,		// First operand
 reg [16:0] temp_result; // 
 
 always @(operand_A, operand_B, func, c_in, csh) begin
-    // 
     result <= 16'b0;
     flags_out <= 4'b0;
 
@@ -50,11 +49,15 @@ always @(operand_A, operand_B, func, c_in, csh) begin
             result <= temp_result[15:0];
         end
         3'b010: begin // SUB
-            temp_result = operand_A + (~operand_B + 1);
+            temp_result = operand_A + (~operand_B + 1'b1);
             result <= temp_result[15:0];
         end
         3'b011: begin // SBC
-            temp_result = operand_A + (~operand_B + c_in);
+            if (c_in == 1'b1) {
+                temp_result = operand_A + (~operand_B);
+            } else {
+                temp_result = operand_A + (~operand_B + 1'b1);
+            }
             result <= temp_result[15:0];
         end
         3'b100: begin // AND
@@ -71,18 +74,28 @@ always @(operand_A, operand_B, func, c_in, csh) begin
         end
     endcase
 end
+
 // Flags Generation
 always @(result, operand_A, operand_B, temp_result, csh, func) begin
     // N and Z flags
     flags_out[3] = result[15]; // N
     flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // Z
 
-    // V flag
-    if ((operand_A[15] & operand_B[15] & ~result[15]) | 
-        (~operand_A[15] & ~operand_B[15] & result[15])) {
-        flags_out[1] = 1'b1; // V
+    // V flag for SUB
+    if (func == 3'b010) {
+        if ((~operand_B[15] & operand_A[15] & ~result[15]) | 
+            (operand_B[15] & ~operand_A[15] & result[15])) {
+            flags_out[1] = 1'b1; // V
+        } else {
+            flags_out[1] = 1'b0;
+        }
     } else {
-        flags_out[1] = 1'b0;
+        if ((operand_A[15] & operand_B[15] & ~result[15]) | 
+            (~operand_A[15] & ~operand_B[15] & result[15])) {
+            flags_out[1] = 1'b1; // V
+        } else {
+            flags_out[1] = 1'b0;
+        }
     }
 
     // C flag
@@ -92,6 +105,7 @@ always @(result, operand_A, operand_B, temp_result, csh, func) begin
         flags_out[0] = temp_result[16]; // C
     }
 end
+
 
 
 
