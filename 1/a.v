@@ -1,17 +1,43 @@
-module Stump_ALU (
-    input [15:0] operand_A,
-    input [15:0] operand_B,
-    input [2:0] func,
-    input c_in,
-    input csh,
-    output reg [15:0] result,
-    output reg [3:0] flags_out
-);
+// Stump ALU
+// Implement your Stump ALU here
+//
+// Created by Paul W Nutter, Feb 2015
+//
+// ** Update this header **
+//
 
-reg [16:0] temp_result; // 用于捕获17位结果以获取进位
+`include "Stump_definitions.v"
+
+// 'include' definitions of function codes etc.
+// e.g. can use "`ADD" instead of "'h0" to aid readability
+// Substitute your own definitions if you prefer by
+// modifying Stump_definitions.v
+
+/*----------------------------------------------------------------------------*/
+
+module Stump_ALU (input  wire [15:0] operand_A,		// First operand
+                                 input  wire [15:0] operand_B,		// Second operand
+		                          input  wire [ 2:0] func,		// Function specifier
+		                          input  wire        c_in,		// Carry input
+		                          input  wire        csh,  		// Carry from shifter
+		                          output reg  [15:0] result,		// ALU output
+		                          output reg  [ 3:0] flags_out);	// Flags {N, Z, V, C}
+
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+/* Declarations of any internal signals and buses used                        */
+
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+/* Verilog code                                                               */
+
+
+reg [16:0] temp_result; // 
 
 always @(operand_A, operand_B, func, c_in, csh) begin
-    // 默认值
+    // 
     result <= 16'b0;
     flags_out <= 4'b0;
 
@@ -24,19 +50,23 @@ always @(operand_A, operand_B, func, c_in, csh) begin
             temp_result = operand_A + operand_B + c_in;
             result <= temp_result[15:0];
         end
-        // ... 其他操作
+        // ... 
 
     endcase
 
-    // 设置N和Z标志
-    flags_out[3] = result[15]; // N标志
-    flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // Z标志
+    // 
+    flags_out[3] = result[15]; // 
+    flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // 
 
-    // 设置V和C标志，这里只是一个简化的例子
-    // 实际的V和C标志的设置会更复杂
     flags_out[1] = (operand_A[15] & operand_B[15] & ~result[15]) | 
-                  (~operand_A[15] & ~operand_B[15] & result[15]); // V标志
-    flags_out[0] = temp_result[16]; // C标志
+                  (~operand_A[15] & ~operand_B[15] & result[15]); // V
+    flags_out[0] = temp_result[16]; // C
 end
 
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+
+/*----------------------------------------------------------------------------*/
+
 endmodule
+
+/*============================================================================*/
