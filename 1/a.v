@@ -34,6 +34,38 @@ module Stump_ALU (input  wire [15:0] operand_A,		// First operand
 /* Verilog code                                                               */
 
 reg [16:0] temp_result; // 
+	always @(operand_A, operand_B, func, c_in, csh) begin
+    result = 16'b0;
+    flags_out = 4'b0;
+
+    case(func)
+        3'b000: begin // ADD
+            temp_result = operand_A + operand_B;
+            result = temp_result[15:0];
+        end
+        // ... [其他的case项]
+    endcase
+end
+
+// Flags Generation
+always @(result, operand_A, operand_B, temp_result, csh, func) begin
+    // N and Z flags
+    flags_out[3] = result[15]; // N
+    flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // Z
+
+    // V flag for SUB
+    if (func == 3'b010) begin
+        if ((~operand_B[15] & operand_A[15] & ~result[15]) | 
+            (operand_B[15] & ~operand_A[15] & result[15])) begin
+            flags_out[1] = 1'b1; // V
+        end else begin
+            flags_out[1] = 1'b0;
+        end
+    end else begin
+        // ... [其他的逻辑]
+    end
+end
+
 
 always @(operand_A, operand_B, func, c_in, csh) begin
     result <= 16'b0;
