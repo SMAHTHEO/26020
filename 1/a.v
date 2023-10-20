@@ -17,15 +17,14 @@ module Stump_ALU (input  wire [15:0] operand_A,		// First operand
 /* Verilog code                                                               */
 
 reg [16:0] temp_result; // 
-
 always @(operand_A, operand_B, func, c_in, csh) begin
-    result = 16'b0;
-    flags_out = 4'b0;
+    result <= 16'b0;  // Use non-blocking assignment
+    flags_out <= 4'b0;
 
     case(func)
         3'b000: begin // ADD
             temp_result = operand_A + operand_B;
-            result = temp_result[15:0];
+            result <= temp_result[15:0];
         end
         3'b001: begin // ADC
             temp_result = operand_A + operand_B + c_in;
@@ -66,14 +65,14 @@ always @(result, operand_A, operand_B, temp_result, csh, func) begin
 
     // V flag for SUB
     if (func == 3'b010) {
-        if ((~operand_B[15] & operand_A[15] & ~result[15]) | 
+        if ((~operand_B[15] & operand_A[15] & ~result[15]) ||  // Use logical OR
             (operand_B[15] & ~operand_A[15] & result[15])) {
             flags_out[1] = 1'b1; // V
         } else {
             flags_out[1] = 1'b0;
         }
     } else {
-        if ((operand_A[15] & operand_B[15] & ~result[15]) | 
+        if ((operand_A[15] & operand_B[15] & ~result[15]) || 
             (~operand_A[15] & ~operand_B[15] & result[15])) {
             flags_out[1] = 1'b1; // V
         } else {
