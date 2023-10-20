@@ -72,13 +72,27 @@ always @(operand_A, operand_B, func, c_in, csh) begin
     endcase
 end
 // Flags Generation
-always @(result, operand_A, operand_B, temp_result, csh) begin
+always @(result, operand_A, operand_B, temp_result, csh, func) begin
+    // N and Z flags
     flags_out[3] = result[15]; // N
     flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // Z
-    flags_out[1] = (operand_A[15] & operand_B[15] & ~result[15]) | 
-                  (~operand_A[15] & ~operand_B[15] & result[15]); // V
-    flags_out[0] = temp_result[16]; // C
+
+    // V flag
+    if ((operand_A[15] & operand_B[15] & ~result[15]) | 
+        (~operand_A[15] & ~operand_B[15] & result[15])) {
+        flags_out[1] = 1'b1; // V
+    } else {
+        flags_out[1] = 1'b0;
+    }
+
+    // C flag
+    if (func == 3'b100 || func == 3'b101) { // AND or OR
+        flags_out[0] = csh;
+    } else {
+        flags_out[0] = temp_result[16]; // C
+    }
 end
+
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
