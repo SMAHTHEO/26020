@@ -14,4 +14,4 @@ def compare_files(output_file, golden_file):
                 print(f"Golden: {line2.strip()}")
 
 if __name__ == "__main__":
-    compare_files("ALU_test_out.txt", "/netopt/info/courses/COMP22111/simfiles/ALU_test_out.txt")
+    compare_files("COMP22111/ALU_test_out.txt", "/netopt/info/courses/COMP22111/simfiles/ALU_test_out.txt")
