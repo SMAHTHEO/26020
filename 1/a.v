@@ -64,29 +64,30 @@ always @(result, operand_A, operand_B, temp_result, csh, func) begin
     flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // Z
 
     // V flag for SUB
-    if (func == 3'b010) {
-        if ((~operand_B[15] & operand_A[15] & ~result[15]) ||  // Use logical OR
-            (operand_B[15] & ~operand_A[15] & result[15])) {
+    if (func == 3'b010) begin
+        if ((~operand_B[15] & operand_A[15] & ~result[15]) ||  
+            (operand_B[15] & ~operand_A[15] & result[15])) begin
             flags_out[1] = 1'b1; // V
-        } else {
+        end else begin
             flags_out[1] = 1'b0;
-        }
-    } else {
+        end
+    end else begin
         if ((operand_A[15] & operand_B[15] & ~result[15]) || 
-            (~operand_A[15] & ~operand_B[15] & result[15])) {
+            (~operand_A[15] & ~operand_B[15] & result[15])) begin
             flags_out[1] = 1'b1; // V
-        } else {
+        end else begin
             flags_out[1] = 1'b0;
-        }
-    }
+        end
+    end
 
     // C flag
-    if (func == 3'b100 || func == 3'b101) { // AND or OR
+    if (func == 3'b100 || func == 3'b101) begin // AND or OR
         flags_out[0] = csh;
-    } else {
+    end else begin
         flags_out[0] = temp_result[16]; // C
-    }
+    end
 end
+
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
