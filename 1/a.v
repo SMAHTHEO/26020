@@ -70,16 +70,14 @@ always @(operand_A, operand_B, func, c_in, csh) begin
             // NOP: No operation for ALU
         end
     endcase
-
-    // N Z
-    flags_out[3] = result[15]; // N
-    flags_out[2] = (result == 16'b0) ? 1'b1 : 1'b0; // Z
-
-    // V C
-    flags_out[1] = (operand_A[15] & operand_B[15] & ~result[15]) | 
-                  (~operand_A[15] & ~operand_B[15] & result[15]); // V
-    flags_out[0] = temp_result[16]; // C
 end
+// Clock-driven always block to latch the flags
+always @(posedge clk) begin
+    flags_out <= {result[15], (result == 16'b0), 
+                  (operand_A[15] & operand_B[15] & ~result[15]) | (~operand_A[15] & ~operand_B[15] & result[15]), 
+                  temp_result[16]};
+end
+
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
