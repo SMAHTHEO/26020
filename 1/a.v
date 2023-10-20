@@ -114,5 +114,10 @@ end
 /*----------------------------------------------------------------------------*/
 
 endmodule
-
+# ** Error: (vlog-13069) /home/c76258yx/Questa/COMP22111/src/Stump/Stump_ALU.v(57): near "=": syntax error, unexpected '=', expecting ++ or --.
+###### /home/c76258yx/Questa/COMP22111/src/Stump/Stump_ALU.v(86):         if ((~operand_B[15] & operand_A[15] & ~result[15]) | 
+# ** Error: (vlog-13069) /home/c76258yx/Questa/COMP22111/src/Stump/Stump_ALU.v(86): near "if": syntax error, unexpected if.
+# End time: 14:53:57 on Oct 20,2023, Elapsed time: 0:00:00
+# Errors: 2, Warnings: 0
+# /cadtools5/mgc/questasim_2022.4/linux_x86_64/vlog failed.
 /*============================================================================*/
