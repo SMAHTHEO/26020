@@ -198,6 +198,10 @@ int matrix_dump_file(matrix_t *m, char *output_file) {
 }
 
 int matrix_allocate_and_init_file(matrix_t *m, char *input_file) {
+    // 防止益处缓冲区
+    #define MAX_LINE_LENGTH 1000
+    #define MAX_COLUMNS 1000
+    
     // 检查传入的矩阵是否为空
     if (!m) return -EINVAL; // 无效参数
     
@@ -208,28 +212,31 @@ int matrix_allocate_and_init_file(matrix_t *m, char *input_file) {
     // 读取矩阵的行数和列数
     int rows = 0;
     int columns = 0;
-    char line[1000]; // 假设每行不超过1000个字符
+    char line[MAX_LINE_LENGTH]; // 假设每行不超过1000个字符
     
     // 使用fgets从文件中读取一行数据，每次最多读取sizeof(line)个字符
     while (fgets(line, sizeof(line), file)) {
+        if (strlen(line) == MAX_LINE_LENGTH - 1) { // 如果接近最大长度，则可能存在溢出风险
+            fclose(file);
+            return -EINVAL; // 文件格式错误
+        }
         // 每次成功读取一行，就增加行数计数
         rows++;
 
         // 只在读取第一行时统计列数
         if (rows == 1) {
-            char temp[1000]; // 为了不修改原始的行数据，我们使用一个临时数组
-            strncpy(temp, line, 1000); // 将读取的一行数据复制到临时数组中
+            char temp[MAX_LINE_LENGTH]; // 为了不修改原始的行数据，我们使用一个临时数组
+            strncpy(temp, line, sizeof(temp)); // 将读取的一行数据复制到临时数组中
             
-            // 使用strtok函数来分割字符串，这里以空格为分隔符来分割字符串
-            // 首次调用strtok时，传递待分割的字符串
-            char *token = strtok(temp, " ");
-            while (token) {
-                // 每找到一个空格分隔的字符串，列数就加1
+            char *saveptr;
+            char *token = strtok_r(temp, " ", &saveptr);
+            while (token && columns < MAX_COLUMNS) { // 限制列数以防止缓冲区溢出
                 columns++;
-
-                // 继续查找下一个分隔的字符串，这里传递NULL作为strtok的第一个参数，
-                // 表示继续之前的字符串分割操作
-                token = strtok(NULL, " ");
+                token = strtok_r(NULL, " ", &saveptr);
+            }
+            if (token && columns == MAX_COLUMNS) {
+                fclose(file);
+                return -EINVAL; // 超出列数限制
             }
         }
     }
