@@ -182,7 +182,7 @@ int matrix_dump_file(matrix_t *m, char *output_file) {
     
     // 使用fopen尝试打开文件以写入
     FILE *file = fopen(output_file, "w");
-    if (!file) return -errno; // 如果无法打开文件，返回错误代码
+    if (!file) return -1; // 如果无法打开文件，返回错误代码
 
     // 遍历矩阵的每一行和每一列，写入文件
     for (int i = 0; i < m->rows; i++) {
@@ -203,7 +203,7 @@ int matrix_allocate_and_init_file(matrix_t *m, char *input_file) {
     
     // 使用fopen尝试打开文件以读取
     FILE *file = fopen(input_file, "r");
-    if (!file) return -errno; // 如果无法打开文件，返回错误代码
+    if (!file) return -1; // 如果无法打开文件，返回错误代码
     
     // 读取矩阵的行数和列数
     int rows = 0;
