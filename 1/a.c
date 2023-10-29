@@ -210,14 +210,25 @@ int matrix_allocate_and_init_file(matrix_t *m, char *input_file) {
     int columns = 0;
     char line[1000]; // 假设每行不超过1000个字符
     
+    // 使用fgets从文件中读取一行数据，每次最多读取sizeof(line)个字符
     while (fgets(line, sizeof(line), file)) {
+        // 每次成功读取一行，就增加行数计数
         rows++;
+
+        // 只在读取第一行时统计列数
         if (rows == 1) {
             char temp[1000]; // 为了不修改原始的行数据，我们使用一个临时数组
-            strncpy(temp, line, 1000);
+            strncpy(temp, line, 1000); // 将读取的一行数据复制到临时数组中
+            
+            // 使用strtok函数来分割字符串，这里以空格为分隔符来分割字符串
+            // 首次调用strtok时，传递待分割的字符串
             char *token = strtok(temp, " ");
             while (token) {
+                // 每找到一个空格分隔的字符串，列数就加1
                 columns++;
+
+                // 继续查找下一个分隔的字符串，这里传递NULL作为strtok的第一个参数，
+                // 表示继续之前的字符串分割操作
                 token = strtok(NULL, " ");
             }
         }
@@ -240,5 +251,4 @@ int matrix_allocate_and_init_file(matrix_t *m, char *input_file) {
     fclose(file); // 关闭文件
     return 0; // 成功返回
 }
-
 
