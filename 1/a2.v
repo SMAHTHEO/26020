@@ -1,132 +1,35 @@
-/* Tests for Stump ALU.  Developed for COMP22111 labs.      JDG  Nov 2012     */
-/*                                                                            */
-/* This runs through a set of test vectors, with both input carry states for  */
-/* all six ALU functions generating all possible combinations of output flags.*/
+// Stump ALU
 
-`timescale  1ns / 100ps
-`include "Stump_definitions.v"
-// 'include' definitions of function codes etc.
 
-/*----------------------------------------------------------------------------*/
+module Stump_ALU (input  wire [15:0] operand_A,	
+                                 input  wire [15:0] operand_B,	
+		                          input  wire [ 2:0] func,	
+		                          input  wire        c_in,	
+		                          input  wire        csh,  	
+		                          output wire  [15:0] result,	
+		                          output wire  [ 3:0] flags_out);
 
-module Stump_ALU_Testbench ();                 // Declare the test module: no I/O
+wire [16:0] U;
+wire [15:0] W, T, D, E,F ;
+wire X;
 
-reg  [15:0] operand_A;                    // Declare the variables at this level
-reg  [15:0] operand_B;                    // 'reg' for values test assigns to
-reg   [2:0] func;                         // (i.e. inputs to device)
-reg         c_in;
-reg         csh;
-wire [15:0] result;                       // 'wire' for device's output values
-wire  [3:0] flags_out;
+or   I1[15:0] (E, operand_A, W);
+and I2[15:0] (D, operand_A, W);
+xor I3[15:0] (T, operand_A,W, U[15:0]);
+and I4 (flags_out[1], ~func[2], X);
+or   I5[15:0] (U[16:1], F, D);
+buf I6 (flags_out[3], result[15]);
+buf I7 (flags_out[2], ~|result);
+xor I8 (X, U[16], U[15]);
+and I9[15:0] (F, E, U[15:0]);
 
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-/* Instantiate module under test                                              */
+assign W = (func[2:1] == 1) ? ~operand_B : operand_B;
+assign flags_out[0] = (func[2:1]==0) ? U[16] : (func[2:1]==1) ? ~U[16] : csh;
+assign U[0] = (func==1) ? c_in : (func==2) ? 1 : (func==3) ? ~c_in : 0;
+assign result = (func==4) ? D : (func==5) ? E : T;
 
-Stump_ALU ALU (.operand_A(operand_A),     // Instantiate a 'Stump_ALU'
-               .operand_B(operand_B),     // called 'ALU'
-	           .func(func),               // and connect its buses
-	           .c_in(c_in),               // to signals of the same name
-               .csh(csh),
-	           .result(result),
-	           .flags_out(flags_out));
 
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-/* Declarations of any internal signals and buses used                        */
-
-integer file_handle;                      // The place to write output
-integer tst, k;                           // Some internal variables
-
-reg [15:0] A_in [0:8];                    // Small RAMs to hold test values
-reg [15:0] B_in [0:8];
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-/* Test                                                                       */
-
-initial                                     // Run the following once
-begin
-
-// Setup test data here rather than reading from files: easier for small sets
-  A_in[0] = 16'h4000; B_in[0] = 16'h3FFF;   // Data for test #0
-  A_in[1] = 16'h5000; B_in[1] = 16'h5000;   // etc.
-  A_in[2] = 16'h4000; B_in[2] = 16'hBFFF;
-  A_in[3] = 16'h4000; B_in[3] = 16'hD000;
-  A_in[4] = 16'hC000; B_in[4] = 16'h4000;
-  A_in[5] = 16'hD000; B_in[5] = 16'h2FFF;
-  A_in[6] = 16'hC000; B_in[6] = 16'h9000;
-  A_in[7] = 16'hC000; B_in[7] = 16'hBFFF;
-  A_in[8] = 16'h8000; B_in[8] = 16'h8000;
-
-  file_handle = $fopen("ALU_test_out.txt"); // Open a message output file
-  $fdisplay(file_handle, "Outcome from Stump ALU tests\n"); // Output title
-
-  for (func = 0; func < 6; func = func + 1) // Iterate over six function types
-  begin
-    case (func)
-      0: $fdisplay(file_handle, "Testing ADD function");
-      1: $fdisplay(file_handle, "Testing ADC function");
-      2: $fdisplay(file_handle, "Testing SUB function");
-      3: $fdisplay(file_handle, "Testing SBC function");
-      4: $fdisplay(file_handle, "Testing AND function");
-      5: $fdisplay(file_handle, "Testing OR  function");
-      default: $fdisplay(file_handle, "Unknown function");
-    endcase
-    for (tst = 0; tst < 9; tst = tst + 1)   // Iterate over test data
-    begin
-      operand_A = A_in[tst];                // Set input buses
-      operand_B = B_in[tst];
-      for (k = 0; k < 2; k = k + 1)         // Iterate over (both) carry states
-      begin
-        if(func < 4)
-        c_in = k;                           // Carry adopts LSB
-      else
-        csh = k;
-      #100                                  // Pause so viewable as waveform
-      display_state(result, flags_out);     // Write results to output file
-    end
-  end
-
-  $fdisplay(file_handle, "");               // Blank line after each test block
-  end
-
-  #100;                                     // Extra pause before finishing
-
-  $fclose(file_handle);                     // Close output file
-
-  $stop;                                    // Tell simulator to stop
-end 
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-/* Example of a 'task' (a bit like a 'method')                                */
-
-task display_state;                       // Task declaration and name
-input [15:0] result;                      // Inputs in the appropriate order
-input  [3:0] flags;                       // (Outputs (many) are also possible)
-
-case (flags)
-  'h0: $fdisplay(file_handle, "Output state: %x  ....", result);
-  'h1: $fdisplay(file_handle, "Output state: %x  ...C", result);
-  'h2: $fdisplay(file_handle, "Output state: %x  ..V.", result);
-  'h3: $fdisplay(file_handle, "Output state: %x  ..VC", result);
-  'h4: $fdisplay(file_handle, "Output state: %x  .Z..", result);
-  'h5: $fdisplay(file_handle, "Output state: %x  .Z.C", result);
-  'h6: $fdisplay(file_handle, "Output state: %x  .ZV.", result);
-  'h7: $fdisplay(file_handle, "Output state: %x  .ZVC", result);
-  'h8: $fdisplay(file_handle, "Output state: %x  N...", result);
-  'h9: $fdisplay(file_handle, "Output state: %x  N..C", result);
-  'hA: $fdisplay(file_handle, "Output state: %x  N.V.", result);
-  'hB: $fdisplay(file_handle, "Output state: %x  N.VC", result);
-  'hC: $fdisplay(file_handle, "Output state: %x  NZ..", result);
-  'hD: $fdisplay(file_handle, "Output state: %x  NZ.C", result);
-  'hE: $fdisplay(file_handle, "Output state: %x  NZV.", result);
-  'hF: $fdisplay(file_handle, "Output state: %x  NZVC", result);
-  default:
-       $fdisplay(file_handle, "Output state: %x  ????", result);
-endcase
-
-endtask
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 endmodule
 
-/*----------------------------------------------------------------------------*/
+/*============================================================================*/
