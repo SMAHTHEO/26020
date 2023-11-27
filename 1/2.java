@@ -26,11 +26,6 @@ public class SlownessScrollTest {
     /**
      * 测试使用 SlownessScroll 是否正确注册 TurnListener 并应用减速效果。
      */
- // ... @Before 方法和其他代码 ...
-
-    /**
-     * 测试使用 SlownessScroll 是否正确注册 TurnListener 并应用减速效果。
-     */
     @Test
     public void testApplySlownessEffect() {
         // 创建测试NPC和玩家，并添加到区域
