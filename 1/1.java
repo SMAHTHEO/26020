@@ -1,12 +1,12 @@
 package games.stendhal.server.entity.item.scroll;
 
+import java.util.HashMap;
 import java.util.Map;
 import games.stendhal.server.core.engine.SingletonRepository;
 import games.stendhal.server.core.events.TurnListener;
 import games.stendhal.server.entity.player.Player;
 import games.stendhal.server.core.engine.StendhalRPZone;
 import games.stendhal.server.entity.Entity;
-import games.stendhal.server.entity.npc.NPC;
 
 /**
  * 表示减速卷轴的类。
@@ -59,22 +59,27 @@ public class SlownessScroll extends Scroll {
      */
     class SlownessEffectTurnListener implements TurnListener {
 
-        private final Player player;
+        private final Player sourcePlayer;
         private int remainingTurns;
+        private Map<Player, Double> originalSpeeds; // 存储受影响玩家的原始速度
 
-        SlownessEffectTurnListener(final Player player, final int duration) {
-            this.player = player;
+        SlownessEffectTurnListener(final Player sourcePlayer, final int duration) {
+            this.sourcePlayer = sourcePlayer;
             this.remainingTurns = duration;
+            this.originalSpeeds = new HashMap<>(); // 初始化映射
         }
 
         @Override
         public void onTurnReached(final int currentTurn) {
             if (remainingTurns > 0) {
-                applySlownessEffect(player);
+                applySlownessEffect(sourcePlayer);
                 remainingTurns--;
             } else {
-                // 效果结束，移除监听器
-            	SingletonRepository.getTurnNotifier().dontNotify(this);
+                // 效果结束，恢复所有受影响玩家的速度，并移除监听器
+                for (Map.Entry<Player, Double> entry : originalSpeeds.entrySet()) {
+                    entry.getKey().setSpeed(entry.getValue());
+                }
+                SingletonRepository.getTurnNotifier().dontNotify(this);
             }
         }
 
@@ -92,26 +97,16 @@ public class SlownessScroll extends Scroll {
                 if (entity.squaredDistance(playerX, playerY) <= EFFECT_RANGE * EFFECT_RANGE) {
                     // 检查实体类型并应用减速效果
                     if (entity instanceof Player) {
-                        // 对玩家应用减速效果
-                        applyEffectToPlayer((Player) entity);
-                    } else if (entity instanceof NPC) {
-                        // 对NPC应用减速效果
-                        applyEffectToNPC((NPC) entity);
+                        Player affectedPlayer = (Player) entity;
+                        // 第一次减速时存储原始速度
+                        if (!originalSpeeds.containsKey(affectedPlayer)) {
+                            originalSpeeds.put(affectedPlayer, affectedPlayer.getSpeed());
+                            affectedPlayer.setSpeed(0.6 * affectedPlayer.getSpeed()); // 减速
+                        }
                     }
-                    // 可以继续添加对其他类型实体的处理
                 }
             }
         }
-
-        private void applyEffectToPlayer(Player player) {
-            // 实现对玩家的减速效果
-            // 可以是减少移动速度、攻击速度、回复速度等
-        }
-
-        private void applyEffectToNPC(NPC npc) {
-            // 实现对NPC的减速效果
-            // 可以是减少移动速度、攻击速度、回复速度等
-        }
-
     }
+
 }
