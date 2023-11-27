@@ -91,17 +91,19 @@ public class SlownessScroll extends Scroll {
             int playerX = player.getX();
             int playerY = player.getY();
 
-            // 检查区域内的所有实体
-            for (Entity entity : zone.getEntitiesAt(playerX, playerY)) {
-                // 检查实体是否在指定范围内
-                if (entity.squaredDistance(playerX, playerY) <= EFFECT_RANGE * EFFECT_RANGE) {
-                    // 检查实体类型并应用减速效果
-                    if (entity instanceof Player) {
-                        Player affectedPlayer = (Player) entity;
-                        // 第一次减速时存储原始速度
-                        if (!originalSpeeds.containsKey(affectedPlayer)) {
-                            originalSpeeds.put(affectedPlayer, affectedPlayer.getSpeed());
-                            affectedPlayer.setSpeed(0.6 * affectedPlayer.getSpeed()); // 减速
+            // 遍历玩家周围的所有坐标
+            for (int x = playerX - EFFECT_RANGE; x <= playerX + EFFECT_RANGE; x++) {
+                for (int y = playerY - EFFECT_RANGE; y <= playerY + EFFECT_RANGE; y++) {
+                    // 检查每个坐标点上的实体
+                    for (Entity entity : zone.getEntitiesAt(x, y)) {
+                        // 仅对玩家应用减速效果
+                        if (entity instanceof Player && entity != player) {
+                            Player affectedPlayer = (Player) entity;
+                            // 第一次减速时存储原始速度
+                            if (!originalSpeeds.containsKey(affectedPlayer)) {
+                                originalSpeeds.put(affectedPlayer, affectedPlayer.getSpeed());
+                                affectedPlayer.setSpeed(0.6 * affectedPlayer.getSpeed()); // 减速
+                            }
                         }
                     }
                 }
