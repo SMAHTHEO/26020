@@ -1,7 +1,9 @@
 package games.stendhal.server.entity.item.scroll;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 import games.stendhal.server.core.engine.SingletonRepository;
 import games.stendhal.server.core.events.TurnListener;
 import games.stendhal.server.entity.player.Player;
@@ -61,35 +63,33 @@ public class SlownessScroll extends Scroll {
 
         private final Player sourcePlayer;
         private int remainingTurns;
-        private Map<Player, Double> originalSpeeds; // 存储受影响玩家的原始速度
+        private Set<Player> affectedPlayers; // 存储受影响的玩家
 
         SlownessEffectTurnListener(final Player sourcePlayer, final int duration) {
             this.sourcePlayer = sourcePlayer;
             this.remainingTurns = duration;
-            this.originalSpeeds = new HashMap<>(); // 初始化映射
+            this.affectedPlayers = new HashSet<>(); // 初始化集合
         }
 
         @Override
         public void onTurnReached(final int currentTurn) {
+            // 检查是否到达效果持续的最后一回合
             if (remainingTurns > 0) {
-                applySlownessEffect(sourcePlayer);
+                applySlownessEffect();
                 remainingTurns--;
             } else {
-                // 效果结束，恢复所有受影响玩家的速度，并移除监听器
-                for (Map.Entry<Player, Double> entry : originalSpeeds.entrySet()) {
-                    entry.getKey().setSpeed(entry.getValue());
-                }
-                SingletonRepository.getTurnNotifier().dontNotify(this);
+                restoreSpeed(); // 效果结束，恢复所有受影响玩家的速度
+                SingletonRepository.getTurnNotifier().dontNotify(this); // 移除监听器
             }
         }
 
-        private void applySlownessEffect(final Player player) {
+        private void applySlownessEffect() {
             // 获取玩家当前所在区域
-            StendhalRPZone zone = player.getZone();
+            StendhalRPZone zone = sourcePlayer.getZone();
 
             // 获取玩家的坐标
-            int playerX = player.getX();
-            int playerY = player.getY();
+            int playerX = sourcePlayer.getX();
+            int playerY = sourcePlayer.getY();
 
             // 遍历玩家周围的所有坐标
             for (int x = playerX - EFFECT_RANGE; x <= playerX + EFFECT_RANGE; x++) {
@@ -97,18 +97,23 @@ public class SlownessScroll extends Scroll {
                     // 检查每个坐标点上的实体
                     for (Entity entity : zone.getEntitiesAt(x, y)) {
                         // 仅对玩家应用减速效果
-                        if (entity instanceof Player && entity != player) {
+                        if (entity instanceof Player && entity != sourcePlayer) {
                             Player affectedPlayer = (Player) entity;
-                            // 第一次减速时存储原始速度
-                            if (!originalSpeeds.containsKey(affectedPlayer)) {
-                                originalSpeeds.put(affectedPlayer, affectedPlayer.getSpeed());
-                                affectedPlayer.setSpeed(0.6 * affectedPlayer.getSpeed()); // 减速
-                            }
+                            affectedPlayers.add(affectedPlayer);
+                            // 应用减速效果
+                            affectedPlayer.setSlowDown(true);
                         }
                     }
                 }
             }
         }
-    }
 
+        private void restoreSpeed() {
+            // 遍历并恢复受影响玩家的速度
+            for (Player player : affectedPlayers) {
+                player.setSlowDown(false);
+            }
+            affectedPlayers.clear(); // 清除集合，准备下一次使用
+        }
+    }
 }
